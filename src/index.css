@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* Global Theme Variables */
+:root {
+  --primary-green: #10b981;
+  --primary-green-dark: #059669;
+  --accent-green: #34d399;
+  --light-green: #6ee7b7;
+  --dark-green: #065f46;
+  --background-black: #000000;
+  --surface-black: #111111;
+  --card-black: #1a1a1a;
+  --border-dark: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+}
+
+/* Global Styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-green) var(--surface-black);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--surface-black);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--primary-green);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green-dark);
+}
+
+body {
+  background: var(--background-black);
+  color: var(--text-primary);
+}
+
+/* Input Styles */
+.input-minimal {
+  background: transparent;
+  border: none;
+  /* faint, subtle bottom border */
+  border-bottom: 1px solid #ffffffbb;
+  border-radius: 0;
+  padding: 12px 0;
+  color: white;
+  transition: border-color 180ms ease, border-width 180ms ease, box-shadow 180ms ease;
+}
+
+.input-minimal:focus,
+.input-minimal:focus-visible {
+  outline: none;
+  /* slightly thicker and green on focus */
+  border-bottom-color: var(--primary-green);
+  border-bottom-width: 2px;
+  /* subtle glow to emphasize focus without adding extra layout change */
+  box-shadow: 0 2px 0 rgba(16, 185, 129, 0.12);
+}
+
+.input-minimal::placeholder {
+  color: rgba(156, 163, 175, 0.8);
+}
+
+/* Animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card Hover Effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+}
