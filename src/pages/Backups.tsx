@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Database, Play, CheckCircle, Clock, AlertCircle, Download } from 'lucide-react'
 import { listBackups, runBackup, downloadBackup } from '../api/backups'
 import Button from '../components/ui/Button'
+import { toast } from 'react-toastify'
 
 export default function Backups() {
   const [items, setItems] = useState<any[]>([])
@@ -21,10 +22,10 @@ export default function Backups() {
     setBusy(true)
     try {
       await runBackup()
-      alert('Backup started')
+      toast.success('Backup started')
       fetch()
     } catch {
-      alert('Failed to start backup')
+      toast.error('Failed to start backup')
     } finally {
       setBusy(false)
     }
@@ -40,13 +41,14 @@ export default function Backups() {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = filename || `backup-${new Date().toISOString().split('T')[0]}.json`
+      link.download = filename || `backup-${new Date().toISOString().split('T')[0]}.csv`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
-    } catch (error) {
-      alert('Failed to download backup')
+      toast.success('Backup downloaded')
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to download backup')
     } finally {
       setDownloading(null)
     }

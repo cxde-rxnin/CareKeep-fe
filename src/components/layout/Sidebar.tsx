@@ -101,10 +101,17 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
               <User className="w-5 h-5 text-white" />
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm text-white font-medium truncate">{user?.name}</div>
+            <NavLink 
+              to="/app/profile" 
+              className={({ isActive }) => `
+              flex-1 min-w-0 transition-colors duration-200 ${
+                isActive ? 'text-emerald-300' : 'text-white hover:text-emerald-300'
+              }
+              `}
+            >
+              <div className="text-sm font-medium truncate">{user?.hospitalName}</div>
               <div className="text-xs text-gray-400 truncate">{user?.email}</div>
-            </div>
+            </NavLink>
           </div>
           
           <button 

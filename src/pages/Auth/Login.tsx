@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate, Link } from 'react-router-dom'
+import { showSuccessToast, showErrorToast } from '../../utils/toast'
 import * as authApi from '../../api/auth'
 import useAuth from '../../store/authStore'
 
@@ -22,9 +23,11 @@ export default function Login() {
       const res = await authApi.login(data)
       const { token, user } = res.data
       setAuth(token, user)
+      showSuccessToast(`Welcome back, ${user.hospitalName}!`, { autoClose: 3000 })
       navigate('/app')
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Login failed')
+      const errorMessage = err.response?.data?.error || 'Login failed'
+      showErrorToast(errorMessage)
     }
   }
 
