@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Users, Database, Shield, Activity, TrendingUp, Clock } from 'lucide-react'
 import client from '../api/client'
+import socketService from '../services/socket'
 
 interface MetricsResponse {
   metrics: {
@@ -19,33 +20,57 @@ export default function Dashboard() {
   const [activity, setActivity] = useState<MetricsResponse['activity']>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    (async () => {
+  const loadMetrics = async () => {
+    try {
+      setLoading(true)
+      const res = await client.get<MetricsResponse>('/metrics')
+      const { metrics: m, health: h, activity: a } = res.data
+      setMetrics({
+        patients: m.patients,
+        backups: m.backups,
+        lastBackup: m.lastBackup ? new Date(m.lastBackup).toLocaleString() : '—',
+        backupStatusMap: m.backupStatusMap
+      })
+      setHealth(h)
+      setActivity(a)
+    } catch {
+      // fallback to previous static approach
       try {
-        setLoading(true)
-        const res = await client.get<MetricsResponse>('/metrics')
-        const { metrics: m, health: h, activity: a } = res.data
+        const p = await client.get('/patients')
+        const b = await client.get('/backups')
         setMetrics({
-          patients: m.patients,
-            backups: m.backups,
-            lastBackup: m.lastBackup ? new Date(m.lastBackup).toLocaleString() : '—',
-            backupStatusMap: m.backupStatusMap
+          patients: p.data?.length ?? 0,
+          backups: b.data?.length ?? 0,
+          lastBackup: b.data?.[0]?.backupDate ? new Date(b.data[0].backupDate).toLocaleString() : '—'
         })
-        setHealth(h)
-        setActivity(a)
-      } catch {
-        // fallback to previous static approach
-        try {
-          const p = await client.get('/patients')
-          const b = await client.get('/backups')
-          setMetrics({
-            patients: p.data?.length ?? 0,
-            backups: b.data?.length ?? 0,
-            lastBackup: b.data?.[0]?.backupDate ? new Date(b.data[0].backupDate).toLocaleString() : '—'
-          })
-        } catch {}
-      } finally { setLoading(false) }
-    })()
+      } catch {}
+    } finally { setLoading(false) }
+  }
+
+  useEffect(() => {
+    loadMetrics()
+    
+    // Setup WebSocket connection for real-time updates
+    socketService.connect()
+    
+    const handleActivityUpdate = (newActivity: any) => {
+      console.log('📡 New activity:', newActivity)
+      setActivity(prev => {
+        const updated = [newActivity, ...prev].slice(0, 10) // Keep only latest 10
+        return updated
+      })
+      // Optionally refresh full metrics periodically or on specific events
+      if (newActivity.type === 'patient') {
+        setMetrics(prev => ({ ...prev, patients: prev.patients + 1 }))
+      }
+    }
+    
+    socketService.on('activity_update', handleActivityUpdate)
+    
+    return () => {
+      socketService.off('activity_update', handleActivityUpdate)
+      socketService.disconnect()
+    }
   }, [])
 
   const healthItem = (_valueLabel: string, value?: string) => {
@@ -104,7 +129,7 @@ export default function Dashboard() {
       {/* Status Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* System Health */}
-        <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700 rounded-2xl p-4 lg:p-6">
+        <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700 rounded-2xl p-4 lg:p-6 h-60">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base lg:text-lg font-semibold text-white">System Health</h3>
             <div className="flex items-center space-x-2">
@@ -138,22 +163,22 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700 rounded-2xl p-4 lg:p-6">
+        <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700 rounded-2xl p-4 lg:p-6 h-60">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base lg:text-lg font-semibold text-white">Recent Activity</h3>
             <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400" />
           </div>
-          <div className="space-y-3">
+          <div className="h-40 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
             {loading && <div className="text-xs text-gray-400">Loading...</div>}
-            {!loading && activity.length === 0 && <div className="text-xs text-gray-400">No recent activity yet.</div>}
+            {!loading && activity.length === 0 && <div className="text-xs text-gray-400 py-8 text-center">No recent activity yet.</div>}
             {activity.map((a, i) => {
               const color = a.type === 'backup' ? (a.status === 'failed' ? 'bg-red-400' : a.status === 'running' ? 'bg-yellow-400' : 'bg-emerald-400')
                 : a.type === 'patient' ? 'bg-blue-400' : 'bg-purple-400'
               return (
-                <div key={i} className="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg">
-                  <div className={`w-2 h-2 ${color} rounded-full`}></div>
-                  <div className="flex-1">
-                    <div className="text-xs lg:text-sm text-white">{a.message}</div>
+                <div key={`${a.at}-${i}`} className="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors">
+                  <div className={`w-2 h-2 ${color} rounded-full flex-shrink-0`}></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs lg:text-sm text-white truncate">{a.message}</div>
                     <div className="text-xs text-gray-400">{new Date(a.at).toLocaleString()}</div>
                   </div>
                 </div>
