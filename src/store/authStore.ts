@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type User = { id: string; name: string; email?: string }
+type User = { id: string; name: string; email?: string; hospitalName?: string }
 
 interface AuthState {
   token: string | null
