@@ -56,7 +56,7 @@ export default function Landing() {
                 to="/signup" 
                 className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25 flex items-center"
               >
-                Start Free Trial
+                Get Started
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -189,7 +189,7 @@ export default function Landing() {
                 to="/signup" 
                 className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25"
               >
-                Start 14-Day Free Trial
+                Start Secure Backup Now
               </Link>
               <Link 
                 to="/login" 
