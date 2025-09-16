@@ -65,7 +65,7 @@ export default function Landing() {
             <div className="flex items-center justify-center space-x-8 text-sm text-gray-400">
               <div className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-emerald-400 mr-2" />
-                HIPAA Compliant
+                NDPR Compliant
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-emerald-400 mr-2" />
@@ -166,7 +166,7 @@ export default function Landing() {
               <h3 className="text-2xl font-bold mb-4 text-emerald-300">Compliance Auditing</h3>
               <p className="text-gray-400 leading-relaxed mb-4">
                 Immutable audit logs track every access and change. 
-                Built-in compliance reporting for HIPAA, SOC 2, and other healthcare standards.
+                Built-in compliance reporting for NDPR, SOC 2, and other healthcare standards.
               </p>
               <div className="text-emerald-400 font-medium">Automated Reports →</div>
             </div>
