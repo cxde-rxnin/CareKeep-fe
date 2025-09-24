@@ -134,7 +134,7 @@ export default function Signup() {
                 <div>
                   <label className="block text-xs font-medium text-gray-300 mb-1">Hospital Name</label>
                   <input {...register('hospitalName')} className="input-minimal w-full py-2 text-sm" placeholder="Enter hospital name" />
-                  {formState.errors.hospitalName && (
+                  {formState.errors.hospitalName && !!formState.touchedFields.hospitalName && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.hospitalName.message}
                     </div>
@@ -154,7 +154,7 @@ export default function Signup() {
                     placeholder="Enter hospital address"
                     rows={2}
                   />
-                  {formState.errors.address && (
+                  {formState.errors.address && !!formState.touchedFields.address && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.address.message}
                     </div>
@@ -164,7 +164,7 @@ export default function Signup() {
                 <div>
                   <label className="block text-xs font-medium text-gray-300 mb-1">Phone Number</label>
                   <input {...register('phoneNumber')} className="input-minimal w-full py-2 text-sm" placeholder="Enter hospital phone number" />
-                  {formState.errors.phoneNumber && (
+                  {formState.errors.phoneNumber && !!formState.touchedFields.phoneNumber && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.phoneNumber.message}
                     </div>
@@ -179,7 +179,7 @@ export default function Signup() {
                 <div>
                   <label className="block text-xs font-medium text-gray-300 mb-1">Email Address</label>
                   <input {...register('email')} className="input-minimal w-full py-2 text-sm" placeholder="Enter hospital email" />
-                  {formState.errors.email && (
+                  {formState.errors.email && !!formState.touchedFields.email && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.email.message}
                     </div>
@@ -194,7 +194,7 @@ export default function Signup() {
                     className="input-minimal w-full py-2 text-sm"
                     placeholder="Create a strong password (min. 6 characters)"
                   />
-                  {formState.errors.password && (
+                  {formState.errors.password && !!formState.touchedFields.password && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.password.message}
                     </div>
@@ -209,7 +209,7 @@ export default function Signup() {
                     className="input-minimal w-full py-2 text-sm"
                     placeholder="Confirm your password"
                   />
-                  {formState.errors.confirmPassword && (
+                  {formState.errors.confirmPassword && !!formState.touchedFields.confirmPassword && (
                     <div className="text-xs text-red-400 mt-1">
                       {formState.errors.confirmPassword.message}
                     </div>
