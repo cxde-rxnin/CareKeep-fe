@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Users, Database, Shield, Activity, TrendingUp, Clock } from 'lucide-react'
 import client from '../api/client'
 import socketService from '../services/socket'
+import useAuth from '../store/authStore'
 
 interface MetricsResponse {
   metrics: {
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [health, setHealth] = useState<{ api: string; backups: string; security: string } | null>(null)
   const [activity, setActivity] = useState<MetricsResponse['activity']>([])
   const [loading, setLoading] = useState(true)
+  const token = useAuth(s => s.token)
 
   const loadMetrics = async () => {
     try {
@@ -50,8 +52,8 @@ export default function Dashboard() {
   useEffect(() => {
     loadMetrics()
     
-    // Setup WebSocket connection for real-time updates
-    socketService.connect()
+    // Setup WebSocket connection for real-time updates, passing token
+    socketService.connect(token || undefined)
     
     const handleActivityUpdate = (newActivity: any) => {
       console.log('📡 New activity:', newActivity)
@@ -71,7 +73,7 @@ export default function Dashboard() {
       socketService.off('activity_update', handleActivityUpdate)
       socketService.disconnect()
     }
-  }, [])
+  }, [token])
 
   const healthItem = (_valueLabel: string, value?: string) => {
     const status = value || 'unknown'
